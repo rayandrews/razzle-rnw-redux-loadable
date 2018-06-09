@@ -1,20 +1,21 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
+import logger from 'redux-logger';
 import rootReducer from '../reducers';
 
 const configureStore = (preloadedState) => {
-  const middlewares = [thunk];
+  const middlewareDevs = process.env.NODE_ENV !== 'production' ? [logger] : [];
+  const middlewares = [thunk, ...middlewareDevs];
 
   const enhancers = [applyMiddleware(...middlewares)];
 
-  // If Redux DevTools Extension is installed use it, otherwise use Redux compose
   /* eslint-disable  */
+  // If Redux DevTools Extension is installed use it, otherwise use Redux compose
   const composeEnhancers =
     process.env.NODE_ENV !== 'production' &&
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
       ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-          // TODO Try to remove when `react-router-redux` is out of beta, LOCATION_CHANGE should not be fired more than once after hot reloading
           // Prevent recomputing reducers for `replaceReducer`
           shouldHotReload: false,
         })

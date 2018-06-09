@@ -7,6 +7,9 @@
     "build": "razzle build",
     "test": "razzle test --env=jsdom",
     "start:prod": "NODE_ENV=production node build/server.js",
+    "clean:build": "rimraf build",
+    "clean:node": "rimraf node_modules",
+    "clean:all": "concurrently --kill-others \"yarn clean:build\" \"yarn clean:node\"",
     "pretty": "prettier-eslint --write \"src/**/*.js\"",
     "lint": "yarn pretty",
     "precommit": "lint-staged"
@@ -22,6 +25,7 @@
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.0",
+    "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "serialize-javascript": "^1.5.0"
   },
@@ -29,6 +33,7 @@
     "babel-eslint": "^8.2.3",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-react-native-web": "^0.4.0",
+    "concurrently": "^3.5.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-config-airbnb-base": "^12.1.0",
@@ -45,7 +50,8 @@
     "onchange": "^4.0.0",
     "prettier-eslint": "^8.8.1",
     "prettier-eslint-cli": "^4.7.1",
-    "razzle": "^2.0.4"
+    "razzle": "^2.0.4",
+    "rimraf": "^2.6.2"
   },
   "lint-staged": {
     "src/**/*.js": [

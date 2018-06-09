@@ -19,19 +19,15 @@ import { fetchCounter } from './App/api/counter';
 // eslint-disable-next-line
 import stats from '../build/react-loadable.json';
 
-function AppWrapper({ store, context, url, modules }) {
-  return function Wrapper() {
-    return (
-      <Capture report={(moduleName) => modules.push(moduleName)}>
-        <Provider store={store}>
-          <StaticRouter context={context} location={url}>
-            <App />
-          </StaticRouter>
-        </Provider>
-      </Capture>
-    );
-  };
-}
+const AppWrapper = ({ store, context, url, modules }) => () => (
+  <Capture report={(moduleName) => modules.push(moduleName)}>
+    <Provider store={store}>
+      <StaticRouter context={context} location={url}>
+        <App />
+      </StaticRouter>
+    </Provider>
+  </Capture>
+);
 
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 const server = express();
@@ -71,6 +67,7 @@ server
         'App',
         {}
       );
+
       const html = ReactDOMServer.renderToString(element);
       const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
 
@@ -92,28 +89,28 @@ server
       ${css}
   </head>
   <body>
-      <div id="root">${html}</div>
+    <div id="root">${html}</div>
 
-      ${
-        process.env.NODE_ENV === 'production'
-          ? `<script src="${assets.client.js}"></script>`
-          : `<script src="${assets.client.js}" crossorigin></script>`
-      }
-      ${chunks
-        .map(
-          (chunk) =>
-            process.env.NODE_ENV === 'production'
-              ? `<script src="/${chunk.file}"></script>`
-              : `<script src="http://${process.env.HOST}:${parseInt(
-                  process.env.PORT,
-                  10
-                ) + 1}/${chunk.file}"></script>`
-        )
-        .join('\n')}
-      <script>
-        window.__PRELOADED_STATE__ = ${serialize(finalState)}
-      </script>
-      <script>window.main();</script>
+    ${
+      process.env.NODE_ENV === 'production'
+        ? `<script src="${assets.client.js}"></script>`
+        : `<script src="${assets.client.js}" crossorigin></script>`
+    }
+    ${chunks
+      .map(
+        (chunk) =>
+          process.env.NODE_ENV === 'production'
+            ? `<script src="/${chunk.file}"></script>`
+            : `<script src="http://${process.env.HOST}:${parseInt(
+                process.env.PORT,
+                10
+              ) + 1}/${chunk.file}"></script>`
+      )
+      .join('\n')}
+    <script>
+  window.__PRELOADED_STATE__ = ${serialize(finalState)};
+  window.main();
+</script>
   </body>
 </html>`
         );
