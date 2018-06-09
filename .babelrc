@@ -1,0 +1,17 @@
+{
+  "presets": ["razzle/babel"],
+  "plugins": [
+    "react-native-web",
+    "react-loadable/babel", ["module-resolver", {
+      "root": ["./src"],
+      "alias": {
+        "actions": "./src/App/actions",
+        "components": "./src/App/components",
+        "containers": "./src/App/containers",
+        "reducers": "./src/App/reducers",
+        "store": "./src/App/store",
+        "react-native": "react-native-web"
+      }
+    }]
+  ]
+}
