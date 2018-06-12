@@ -1,12 +1,14 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import BrowserRouter from 'react-router-dom/BrowserRouter';
+import { BrowserRouter } from 'react-router-dom';
 
-import App from './App';
+import configureStore from 'store/configureStore';
+import App from 'App';
 
 /* eslint-disable */
-import configureStore from 'store/configureStore';
-const store = configureStore(window.__PRELOADED_STATE__ || {});
+const preloadedState = window.__PRELOADED_STATE__;
+const store = configureStore(preloadedState);
+delete window.__PRELOADED_STATE__;
 /* eslint-enable */
 
 const AppWrapper = () => (

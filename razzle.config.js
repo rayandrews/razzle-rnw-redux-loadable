@@ -4,16 +4,9 @@ const path = require('path');
 const { ReactLoadablePlugin } = require('react-loadable/webpack');
 
 module.exports = {
-  modify(config, { target, dev }, webpack) {
-    // config.resolve.alias = {
-    //   components: path.resolve('./src/App/components/'),
-    //   containers: path.resolve('./src/App/containers/'),
-    //   reducers: path.resolve('./src/App/reduces/'),
-    //   actions: path.resolve('./src/App/actions/'),
-    //   store: path.resolve('./src/App/store'),
-    // };
+  modify(defaultConfig, { target, dev }, webpack) {
+    const config = defaultConfig;
 
-    // Since RN web takes care of CSS, we should remove it for a #perf boost
     config.module.rules = config.module.rules
       .filter(
         (rule) =>

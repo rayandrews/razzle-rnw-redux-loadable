@@ -14,5 +14,5 @@ window.main = () => {
 };
 
 if (module.hot) {
-  module.hot.accept('./App', window.main);
+  module.hot.accept();
 }
