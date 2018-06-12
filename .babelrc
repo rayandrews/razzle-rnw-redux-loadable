@@ -5,6 +5,9 @@
     "react-loadable/babel", ["module-resolver", {
       "root": ["./src"],
       "alias": {
+        "build": "./build/",
+        "App": "./src/App",
+        "api": "./src/App/api",
         "actions": "./src/App/actions",
         "components": "./src/App/components",
         "containers": "./src/App/containers",
@@ -12,6 +15,7 @@
         "store": "./src/App/store",
         "react-native": "react-native-web"
       }
-    }]
+    }],
+    "transform-decorators"
   ]
 }
