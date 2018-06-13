@@ -2,6 +2,10 @@
 
 const path = require('path');
 const { ReactLoadablePlugin } = require('react-loadable/webpack');
+const {
+  injectBabelResolveModules,
+  injectBabelInclude,
+} = require('./util/babel-injector');
 
 module.exports = {
   modify(defaultConfig, { target, dev }, webpack) {
