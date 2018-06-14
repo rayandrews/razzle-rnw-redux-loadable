@@ -16,6 +16,6 @@
         "react-native": "react-native-web"
       }
     }],
-    "transform-decorators"
+    "transform-decorators-legacy"
   ]
 }

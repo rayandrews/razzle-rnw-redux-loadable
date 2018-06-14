@@ -12,6 +12,7 @@ import App from 'App';
 import configureStore from 'store/configureStore';
 import { fetchCounter } from 'api/counter';
 
+// eslint-disable-next-line
 import stats from 'build/react-loadable.json';
 
 import AppWrapper from './AppWrapper';
@@ -67,6 +68,11 @@ server
       <title>Welcome to Razzle</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       ${css}
+      ${
+        assets.client.css
+          ? `<link rel="stylesheet" href="${assets.client.css}">`
+          : ''
+      }
   </head>
   <body>
     <div id="root">${html}</div>
