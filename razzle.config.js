@@ -5,10 +5,34 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const PostCssFlexBugFixes = require('postcss-flexbugs-fixes');
 
+const envDefinition = (target) => {
+  const env = {
+    __SERVER__: true,
+    __CLIENT__: true,
+    __DEVELOPMENT__: true,
+    __DEVTOOLS__: true,
+  };
+
+  if (target === 'web') {
+    return Object.assign({}, env, {
+      __SERVER__: false,
+    });
+  }
+
+  return Object.assign({}, env, {
+    __CLIENT__: false,
+  });
+};
+
 module.exports = {
-  modify(defaultConfig, { target, dev }) {
+  modify(defaultConfig, { target, dev }, webpack) {
     const config = Object.assign({}, defaultConfig);
     const isServer = target !== 'web';
+
+    config.plugins = [
+      ...config.plugins,
+      new webpack.DefinePlugin(envDefinition(target)),
+    ];
 
     const postCssLoader = {
       loader: require.resolve('postcss-loader'),
@@ -65,25 +89,25 @@ module.exports = {
     ];
     /* eslint-enable */
 
-    if (target === 'web') {
+    config.resolve.modules = [...config.resolve.modules, 'src'];
+    if (!isServer) {
       config.plugins = [
         ...config.plugins,
         new ReactLoadablePlugin({
           filename: './build/react-loadable.json',
         }),
       ];
+
+      if (!dev) {
+        config.optimization.minimizer = [
+          ...config.optimization.minimizer,
+          new OptimizeCSSAssetsPlugin({}),
+        ];
+      }
     }
 
-    config.resolve.modules.push('src');
-    config.devtool = dev ? 'eval-source-map' : 'none';
-
-    if (!isServer && !dev) {
-      config.optimization.minimizer = [
-        ...config.optimization.minimizer,
-        new OptimizeCSSAssetsPlugin({}),
-      ];
-    }
-
-    return config;
+    return Object.assign({}, config, {
+      devtool: dev ? 'eval-source-map' : 'none',
+    });
   },
 };

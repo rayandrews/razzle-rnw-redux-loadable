@@ -1,5 +1,9 @@
-import express from 'express';
+import 'cross-fetch/polyfill';
 
+import express from 'express';
+import logger from 'morgan';
+
+import { matchPath } from 'react-router-dom';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native';
 import { getBundles } from 'react-loadable/webpack';
@@ -7,7 +11,8 @@ import { getBundles } from 'react-loadable/webpack';
 import qs from 'qs';
 import serialize from 'serialize-javascript';
 
-import App from 'App';
+import App from 'app';
+import AppRoutes from 'app/routes';
 
 import configureStore from 'store/configureStore';
 import { fetchCounter } from 'api/counter';
@@ -20,47 +25,81 @@ import AppWrapper from './AppWrapper';
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 const server = express();
 
+server.use(logger('combined'));
+
+server.get('/api/counter', (req, res) => {
+  fetchCounter((result) => {
+    const params = qs.parse(req.query);
+    const counter = parseInt(params.counter, 10) || result || 0;
+
+    res.json({
+      counter,
+    });
+  });
+});
+
 server
   .disable('x-powered-by')
   .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
   .get('/*', (req, res) => {
-    fetchCounter((apiResult) => {
-      const params = qs.parse(req.query);
-      const counter = parseInt(params.counter, 10) || apiResult || 0;
-      const preloadedState = { counter };
-      const store = configureStore(preloadedState);
-      const finalState = store.getState();
+    /* Initializing redux store based on fetch data */
+    const store = configureStore();
 
-      const context = {};
-      const modules = [];
+    const promises = AppRoutes.reduce((acc, route) => {
+      if (
+        matchPath(req.path, route) &&
+        route.component &&
+        route.component.preload
+      ) {
+        acc.push(
+          route.component
+            .preload()
+            .then((comp) =>
+              comp.default.fetchData(store, req.params, req.query)
+            )
+        );
+      }
 
-      AppRegistry.registerComponent('App', () =>
-        AppWrapper({
-          context,
-          store,
-          url: req.url,
-          modules,
-          Component: App,
-        })
-      );
+      return acc;
+    }, []);
+    /* end of redux store */
 
-      const { element, getStyleElement } = AppRegistry.getApplication(
-        'App',
-        {}
-      );
+    Promise.all(promises)
+      .then(() => {
+        const finalState = store.getState();
 
-      const html = ReactDOMServer.renderToString(element);
-      const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+        const context = {};
+        const modules = [];
 
-      if (context.url) {
-        res.redirect(context.url);
-      } else {
-        const bundles = getBundles(stats, modules);
-        const chunks = bundles.filter((bundle) => bundle.file.endsWith('.js'));
+        AppRegistry.registerComponent('App', () =>
+          AppWrapper({
+            context,
+            store,
+            url: req.url,
+            modules,
+            Component: App,
+          })
+        );
 
-        /* eslint-disable */
-        res.status(200).send(
-          `<!doctype html>
+        const { element, getStyleElement } = AppRegistry.getApplication(
+          'App',
+          {}
+        );
+
+        const html = ReactDOMServer.renderToString(element);
+        const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+
+        if (context.url) {
+          res.redirect(context.url);
+        } else {
+          const bundles = getBundles(stats, modules);
+          const chunks = bundles.filter((bundle) =>
+            bundle.file.endsWith('.js')
+          );
+
+          /* eslint-disable */
+          res.status(200).send(
+            `<!doctype html>
 <html lang="">
   <head>
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -100,10 +139,14 @@ server
 </script>
   </body>
 </html>`
-        );
-        /** eslint-enable */
-      }
-    });
+          );
+          /** eslint-enable */
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error');
+      });
   });
 
 export default server;

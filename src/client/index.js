@@ -1,3 +1,4 @@
+import 'cross-fetch/polyfill';
 import Loadable from 'react-loadable';
 import { AppRegistry } from 'react-native';
 

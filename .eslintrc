@@ -20,12 +20,18 @@
     "prettier"
   ],
   "globals": {
-    "graphql": false
+    "graphql": false,
+    "window": false,
+    "process": false,
+    "__SERVER__": false,
+    "__CLIENT__": false,
+    "__DEVELOPMENT__": false
   },
   "parserOptions": {
     "ecmaVersion": 8,
     "sourceType": "module",
     "ecmaFeatures": {
+      "experimentalDecorators": true,
       "experimentalObjectRestSpread": true,
       "jsx": true,
       "classes": true

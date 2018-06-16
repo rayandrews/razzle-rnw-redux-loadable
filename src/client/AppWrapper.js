@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 
 import configureStore from 'store/configureStore';
-import App from 'App';
+import App from 'app';
 
 /* eslint-disable */
 const preloadedState = window.__PRELOADED_STATE__;

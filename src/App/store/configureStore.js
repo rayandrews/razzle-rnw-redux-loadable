@@ -4,7 +4,7 @@ import logger from 'redux-logger';
 import rootReducer from '../reducers';
 
 const configureStore = (preloadedState) => {
-  const middlewareDevs = process.env.NODE_ENV !== 'production' ? [logger] : [];
+  const middlewareDevs = __DEVELOPMENT__ && __CLIENT__ ? [logger] : [];
   const middlewares = [thunk, ...middlewareDevs];
 
   const enhancers = [applyMiddleware(...middlewares)];
@@ -12,7 +12,8 @@ const configureStore = (preloadedState) => {
   /* eslint-disable  */
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose
   const composeEnhancers =
-    process.env.NODE_ENV !== 'production' &&
+    __DEVELOPMENT__ &&
+    __DEVTOOLS__ &&
     typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
       ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
@@ -30,7 +31,7 @@ const configureStore = (preloadedState) => {
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('../reducers', () => {
-      const nextRootReducer = require('reducers').default;
+      const nextRootReducer = require('../reducers').default;
       store.replaceReducer(nextRootReducer);
     });
   }

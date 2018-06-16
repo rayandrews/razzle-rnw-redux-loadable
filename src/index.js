@@ -1,14 +1,18 @@
 /* eslint-disable */
 import http from 'http';
 import Loadable from 'react-loadable';
+import config from 'config';
 import app from './server';
 
 const server = http.createServer(app);
+const port = process.env.PORT || config.get('port');
 
 let currentApp = app;
 
 Loadable.preloadAll().then(() => {
-  server.listen(process.env.PORT || 3000);
+  server.listen(port, () => {
+    console.log(`✅  Server is listening on port ${port}`);
+  });
 });
 
 if (module.hot) {
