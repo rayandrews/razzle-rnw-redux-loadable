@@ -6,7 +6,7 @@ import CSSModules from 'react-css-modules';
 
 import style from './index.module.css';
 
-const enhance = compose(
+export const enhance = compose(
   CSSModules(style),
   setPropTypes({
     increment: PropTypes.func.isRequired,

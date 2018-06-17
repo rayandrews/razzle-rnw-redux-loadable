@@ -1,5 +1,11 @@
 {
-  "presets": ["razzle/babel"],
+  "presets": [
+    "razzle/babel", ["env", {
+      "targets": {
+        "node": 6
+      }
+    }]
+  ],
   "plugins": [
     "react-native-web",
     "react-loadable/babel", ["module-resolver", {
@@ -20,6 +26,8 @@
         "react-native": "react-native-web"
       }
     }],
-    "transform-decorators-legacy"
+    "transform-decorators-legacy", ["lodash", {
+      "id": ["lodash", "recompose"]
+    }]
   ]
 }

@@ -12,15 +12,11 @@ const CounterWrapped = connect(
 )(Counter);
 
 CounterWrapped.fetchData = (store) => {
+  if (__CLIENT__) return [];
+
   const promises = [];
-
   promises.push(store.dispatch(CounterActions.getCounter()));
-
-  if (__SERVER__) {
-    return Promise.all(promises);
-  }
-
-  return [];
+  return Promise.all(promises);
 };
 
 export default CounterWrapped;

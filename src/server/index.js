@@ -52,11 +52,11 @@ server
         route.component.preload
       ) {
         acc.push(
-          route.component
-            .preload()
-            .then((comp) =>
-              comp.default.fetchData(store, req.params, req.query)
-            )
+          route.component.preload().then((comp) => {
+            if (typeof comp.default.fetchData !== 'function') return undefined;
+
+            return comp.default.fetchData(store, req.params, req.query);
+          })
         );
       }
 

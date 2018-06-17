@@ -1,9 +1,12 @@
 const path = require('path');
 const autoprefixer = require('autoprefixer');
 const { ReactLoadablePlugin } = require('react-loadable/webpack');
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const PostCssFlexBugFixes = require('postcss-flexbugs-fixes');
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
 
 const envDefinition = (target) => {
   const env = {
@@ -90,6 +93,7 @@ module.exports = {
     /* eslint-enable */
 
     config.resolve.modules = [...config.resolve.modules, 'src'];
+
     if (!isServer) {
       config.plugins = [
         ...config.plugins,
@@ -103,7 +107,41 @@ module.exports = {
           ...config.optimization.minimizer,
           new OptimizeCSSAssetsPlugin({}),
         ];
+      } else {
+        config.plugins = [
+          ...config.plugins,
+          new BundleAnalyzerPlugin(),
+          new FriendlyErrorsPlugin({
+            compilationSuccessInfo: {
+              messages: ['You application is running'],
+              notes: ['Hot reloading enabled!'],
+            },
+            // should the console be cleared between each compilation?
+            // default is true
+            clearConsole: true,
+
+            // add formatters and transformers (see below)
+            additionalFormatters: [],
+            additionalTransformers: [],
+          }),
+        ];
       }
+    }
+
+    config.plugins = [
+      ...config.plugins,
+      new LodashModuleReplacementPlugin({
+        collections: true,
+        shorthands: true,
+      }),
+    ];
+
+    if (!dev) {
+      config.plugins = [
+        ...config.plugins,
+        new webpack.IgnorePlugin(/^\.\/locale$/, [/moment$/]),
+        new webpack.NoErrorsPlugin(),
+      ];
     }
 
     return Object.assign({}, config, {
