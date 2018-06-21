@@ -3,7 +3,7 @@ const autoprefixer = require('autoprefixer');
 const { ReactLoadablePlugin } = require('react-loadable/webpack');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const PostCssFlexBugFixes = require('postcss-flexbugs-fixes');
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
@@ -110,7 +110,7 @@ module.exports = {
       } else {
         config.plugins = [
           ...config.plugins,
-          new BundleAnalyzerPlugin(),
+          // new BundleAnalyzerPlugin(),
           new FriendlyErrorsPlugin({
             compilationSuccessInfo: {
               messages: ['You application is running'],
